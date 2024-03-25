@@ -1,0 +1,47 @@
+# ModelArguments
+model_name_or_path: ../models/gpt2/
+torch_dtype: bfloat16
+tokenizer_name: ../models/gpt2/
+checkpoint: null
+tokenizer_kwargs:
+  use_fast: False
+  padding_side: right
+  
+# DataArguments
+dataset_name: dolly
+
+# Seq2SeqTrainingArguments
+output_dir: gpt2-base-kd
+num_train_epochs: 20
+learning_rate: 0.0005
+per_device_train_batch_size: 8
+gradient_accumulation_steps: 2
+per_device_eval_batch_size: 16
+bf16: True
+adam_epsilon: 0.001
+lr_scheduler_type: cosine
+weight_decay: 0.01
+max_grad_norm: 1.0
+optim: adamw_torch  # sgd
+save_strategy: steps
+evaluation_strategy: steps
+logging_strategy: steps
+eval_steps: 0.5
+save_steps: 0.5
+logging_steps: 0.05
+save_total_limit: 10
+load_best_model_at_end: True
+report_to: wandb
+remove_unused_columns: False
+# gradient_checkpointing: True  # 
+ddp_find_unused_parameters: True
+deepspeed: ds_config/ds_config_zero1.json
+
+# KDArguments
+kd_type: kd
+tensor_parallel: false
+teacher_model_path: ./results/dolly/gpt2-xlarge-sft/checkpoint-13752
+kd_args:
+  reverse_kld: true
+  kd_ratio: 0.5
+  kd_temperature: 1.0
